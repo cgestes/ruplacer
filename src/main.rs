@@ -14,27 +14,31 @@ fn main() {
             .required(true)
             .index(1))
         .arg(Arg::with_name("DIR")
-            .short("d")
-            .long("dir")
+            // .short("d")
+            // .long("dir")
             .value_name("DIR")
+            .multiple(true)
             .index(2)
             .help("the directory to find into")
             .takes_value(true))
         .arg(Arg::with_name("verbose")
             .short("v")
+            .long("verbose")
             .multiple(true)
             .help("Sets the level of verbosity"))
         .get_matches();
     //println!("{}", matches);
-    let dir = matches.value_of("DIR").unwrap_or("./");
-    println!("Root directory: {}", dir);
-
-    for result in Walk::new(dir) {
-        // Each item yielded by the iterator is either a directory entry or an
-        // error, so either print the path or the error.
-        match result {
-            Ok(entry) => println!("{}", entry.path().display()),
-            Err(err) => println!("ERROR: {}", err),
+    // vec!["./"]
+    let dirs: Vec<_> = matches.value_of("DIR").unwrap().collect();
+    println!("Root directory: {}", dirs);
+    for dir in dirs {
+        for result in Walk::new(dir) {
+            // Each item yielded by the iterator is either a directory entry or an
+            // error, so either print the path or the error.
+            match result {
+                Ok(entry) => println!("{}", entry.path().display()),
+                Err(err) => println!("ERROR: {}", err),
+            }
         }
     }
 }
